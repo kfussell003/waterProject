@@ -1,6 +1,6 @@
 %fetch HTML as textfile
-reservoirUrl = 'https://cdec.water.ca.gov/reportapp/javareports?name=RES';
-page = websave('reservoirData.txt', reservoirUrl);
+url = 'https://cdec.water.ca.gov/reportapp/javareports?name=RES';
+page = websave('reservoirData.txt', url);
 
 %file to string
 fid = fopen('reservoirData.txt');
@@ -10,7 +10,7 @@ fclose(fid);
 %split into name and outflow
 table = split(text, 'noborder');
 table = table(5:end, 1);
-name = strings(0);
+reservoirNames = strings(0);
 outflow = strings(0);
 headers = 0;
 for i = 1:length(table)
@@ -20,7 +20,7 @@ for i = 1:length(table)
              list1 = split(line, ">");
              str1 = list1{2};
              list2 = split(str1, "<");
-             name(ceil((i-headers)/12)) = list2{1};
+             reservoirNames(ceil((i-headers)/12)) = list2{1};
          elseif mod(i-headers, 12) == 8
              list1 = split(line, ">");
              str1 = list1{2};
@@ -32,3 +32,9 @@ for i = 1:length(table)
      end
 % 
 end
+
+%convert outflow to integer without commas
+for i = 1:length(outflow) 
+    outflow(i) = erase(outflow(i), ",");
+end
+outflow = arrayfun(@str2num, outflow);
